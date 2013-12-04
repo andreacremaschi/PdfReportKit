@@ -13,8 +13,12 @@
  limitations under the License. */
 
 #import <Foundation/Foundation.h>
-#import "PRKRenderHtmlOperationDelegate.h"
 
+typedef NS_ENUM(NSInteger, PRKSectionType) {
+    PRKSectionTypeHeader,
+    PRKSectionTypeContent,
+    PRKSectionTypeFooter
+};
 
 @interface PRKRenderHtmlOperation : NSOperation<UIWebViewDelegate>
 {
@@ -27,8 +31,9 @@
 }
 
 
-@property (nonatomic, weak) id<PRKRenderHtmlOperationDelegate> delegate;
+@property (nonatomic, weak) id delegate;
+@property (nonatomic, copy) UIViewPrintFormatter*printFormatter;
 
-- (id) initWithHtmlContent: (NSString *)html andSectionType: (PRKSectionType)sectionType;
+- (id) initWithHtmlContent: (NSString *)html;
 
 @end

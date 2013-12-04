@@ -13,12 +13,12 @@
  limitations under the License. */
 
 #import <Foundation/Foundation.h>
-@class PRKGenerator;
+@class PRKGeneratorOperation;
 
 @protocol PRKGeneratorDataSource <NSObject>
 
 @required
-- (id)         reportsGenerator: (PRKGenerator *)generator dataForReport: (NSString *)reportName withTag: (NSString *)tagName forPage: (NSUInteger)pageNumber offset: (NSUInteger)offset itemsCount: (NSUInteger)itemsCount;
+- (id)         reportsGenerator: (PRKGeneratorOperation *)generator dataForReport: (NSString *)reportName withTag: (NSString *)tagName forPage: (NSUInteger)pageNumber offset: (NSUInteger)offset itemsCount: (NSUInteger)itemsCount;
 
 
 

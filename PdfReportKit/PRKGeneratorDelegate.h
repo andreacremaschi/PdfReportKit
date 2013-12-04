@@ -14,10 +14,10 @@
 
 #import <Foundation/Foundation.h>
 
-@class PRKGenerator;
+@class PRKGeneratorOperation;
 
 @protocol PRKGeneratorDelegate <NSObject>
 
-- (void) reportsGenerator:(PRKGenerator *)generator didFinishRenderingWithData: (NSData *)data;
+- (void) reportsGenerator:(PRKGeneratorOperation *)generator didFinishRenderingWithData: (NSData *)data;
 
 @end

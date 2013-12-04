@@ -13,50 +13,26 @@
  limitations under the License. */
 
 #import <Foundation/Foundation.h>
-#import "PRKGeneratorDataSource.h"
-#import "PRKGeneratorDelegate.h"
-#import "GRMustache.h"
-#import "PRKRenderHtmlOperation.h"
+#import "PRKGeneratorOperation.h"
 
-typedef NS_ENUM(NSInteger, PRKPageOrientation) {
-    PRKPortraitPage,
-    PRKLandscapePage
-};
+@interface PRKGenerator : NSObject
 
-@interface PRKGenerator : NSObject<PRKGeneratorDataSource, PRKRenderHtmlOperationDelegate>
-{
-    NSString        * currentReportName;
-    NSUInteger        currentReportPage;
-    NSUInteger        currentReportItemsPerPage;
-    NSUInteger        currentReportTotalItems;
-    NSUInteger        currentNumberOfItems;
-    NSUInteger        remainingItems;
-    NSUInteger        currentMaxItemsSinglePage;
-    NSUInteger        currentMinItemsSinglePage;
-    bool              currentSuccessSinglePage;
-    
-    
-    NSMutableData          * currentReportData;
-    GRMustacheTemplate * template;
-    
-    NSMutableDictionary * renderedTags;
-    
-    UIPrintFormatter    * headerFormatter;
-    UIPrintFormatter    * contentFormatter;
-    UIPrintFormatter    * footerFormatter;
-}
-
-
-@property (nonatomic, weak)     id<PRKGeneratorDataSource> dataSource;
-@property (nonatomic, weak)     id<PRKGeneratorDelegate> delegate;
-@property (nonatomic, retain)   enum PRKPageSize;
-@property (nonatomic, retain)   NSOperationQueue * renderingQueue;
-
-// Instance methods
-- (void)createReportWithName:(NSString *)reportName templateURLString:(NSString *)templatePath itemsPerPage:(NSUInteger)itemsPerPage totalItems:(NSUInteger)totalItems pageOrientation:(PRKPageOrientation)orientation dataSource: (id<PRKGeneratorDataSource>)dataSource delegate: (id<PRKGeneratorDelegate>)delegate error:(NSError *__autoreleasing *)error;
+@property (nonatomic, strong)   NSOperationQueue * renderingQueue;
 
 // Static methods
 + (PRKGenerator *) sharedGenerator;
+
+// Instance methods
+- (void)createReportWithName: (NSString *)reportName
+           templateURLString: (NSString *)templatePath
+                itemsPerPage: (NSUInteger)itemsPerPage
+                  totalItems: (NSUInteger)totalItems
+             pageOrientation: (PRKPageOrientation)orientation
+                  dataSource: (id<PRKGeneratorDataSource>)dataSource
+                    delegate: (id<PRKGeneratorDelegate>)delegate
+                       error: (NSError *__autoreleasing *)error
+             completionBlock: (void(^)())completionBlock;
+
 
 
 @end

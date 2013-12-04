@@ -13,23 +13,36 @@
  limitations under the License. */
 
 #import "PRKRenderHtmlOperation.h"
-#import "PRKGenerator.h"
+#import "PRKGeneratorOperation.h"
 
 @implementation PRKRenderHtmlOperation
 
-- (id)initWithHtmlContent:(NSString *)html andSectionType: (PRKSectionType)sectionType
+- (id)initWithHtmlContent:(NSString *)html
 {
     self = [super init];
     if (self)
     {        
         htmlSource = html;
-        htmlSectionType = sectionType;
-        
-        renderingWebView = [[UIWebView alloc] init];
-        renderingWebView.delegate = self;
     }
     
     return self;
+}
+
+- (UIWebView *)renderingWebView {
+    if (renderingWebView == nil) {
+        if ([NSThread isMainThread]) {
+            renderingWebView = [[UIWebView alloc] init];
+            renderingWebView.delegate = self;
+            
+        } else
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                @autoreleasepool {
+                    renderingWebView = [[UIWebView alloc] init];
+                    renderingWebView.delegate = self;
+                }
+            });
+    }
+    return renderingWebView;
 }
 
 - (void)start
@@ -41,7 +54,12 @@
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
-    [renderingWebView loadHTMLString:htmlSource baseURL:baseURL];
+    if ([NSThread isMainThread]) {
+        [self.renderingWebView loadHTMLString:htmlSource baseURL:baseURL];
+    } else
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.renderingWebView loadHTMLString:htmlSource baseURL:baseURL];
+        });
 }
 
 - (BOOL)isConcurrent
@@ -68,7 +86,8 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     webView.delegate = nil;
-    [self.delegate didFinishLoadingSection:htmlSectionType withPrintFormatter:renderingWebView.viewPrintFormatter];
+    self.printFormatter = [self.renderingWebView.viewPrintFormatter copy];
+
     [self willChangeValueForKey:@"isFinished"];
     finished = YES;
     [self didChangeValueForKey:@"isFinished"];
